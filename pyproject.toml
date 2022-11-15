@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "testutil"
+version = "0.1.0"
+description = ""
+authors = ["shadeofblue <blue@golem.network>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
