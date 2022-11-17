@@ -5,6 +5,7 @@ from typing import Optional
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
+
 ERC20_ABI_FILE = Path(__file__).parent / "erc20abi.json"
 
 from .eth import wei_to_ether
@@ -12,16 +13,27 @@ from .eth import wei_to_ether
 BLOCK_QUERY_INTERVAL = 5.0
 
 
+def debug_middleware(make_request, w3):  # noqa
+    def middleware(method, params):
+        print("request", method, params)
+        response = make_request(method, params)
+        print("response", response)
+        return response
+    return middleware
+
+
 class Scanner:
     address: Optional[str] = None
 
-    def __init__(self, config: dict, address: Optional[str], verbose: bool=False):
+    def __init__(self, config: dict, address: Optional[str], verbose: bool=False, debug: bool=False):
         self.config = config
         if address:
             self.address = address.lower()
         self.verbose = verbose
 
         self.w3 = Web3(Web3.HTTPProvider(self.config["geth_address"]))
+        if debug:
+            self.w3.middleware_onion.inject(debug_middleware, layer=0)
         self.contract = self.w3.eth.contract(
             self.config["glm_contract_address"],
             abi=open(ERC20_ABI_FILE, "r").read()
@@ -59,6 +71,6 @@ class Scanner:
             await asyncio.sleep(BLOCK_QUERY_INTERVAL)
 
 
-async def run_scanner(config, address: Optional[str], offset: int, verbose: bool):
-    scanner = Scanner(config, address, verbose=verbose)
+async def run_scanner(config, address: Optional[str], offset: int, verbose: bool, debug: bool):
+    scanner = Scanner(config, address, verbose=verbose, debug=debug)
     await scanner.run(offset)

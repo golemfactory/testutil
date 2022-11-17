@@ -16,9 +16,10 @@ def _cli():
 @click.option("--address", "-a",type=str, default=None)
 @click.option("--offset", "-o", type=int, default=100, help="Start that many blocks back.")
 @click.option("--verbose", "-v", is_flag=True, default=False, help="Display additional info.")
-def scan(payment_network: str, address: Optional[str], offset: int, verbose: bool):
+@click.option("--debug", "-d", is_flag=True, default=False, help="Display queries and responses.")
+def scan(payment_network: str, address: Optional[str], offset: int, verbose: bool, debug: bool):
     config = CONFIG.get(payment_network)
-    asyncio.run(run_scanner(config, address, offset, verbose))
+    asyncio.run(run_scanner(config, address, offset, verbose, debug))
 
 
 if __name__ == "__main__":
