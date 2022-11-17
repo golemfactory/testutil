@@ -42,9 +42,7 @@ class Scanner:
     async def scan_blocks(self, from_block: int, to_block: int):
         if self.verbose:
             print("blocks: ", list(range(from_block, to_block+1)))
-        for e in self.contract.events.Transfer.getLogs(
-                {"fromBlock": from_block, "toBlock": to_block}
-        ):
+        for e in self.contract.events.Transfer.getLogs(fromBlock=from_block, toBlock=to_block):
             tx_hash = e["transactionHash"].hex()
             args = e["args"]
             if (
