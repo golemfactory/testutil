@@ -1,14 +1,12 @@
 const http = require('http')
   
   const server = http.createServer(function(request, response) {
-    //console.dir(request.param)
   
     if (request.method == 'POST') {
       console.log('POST request received')
       var body = ''
       request.on('data', function(data) {
         body += data
-        console.log('Partial body: ' + body)
       })
       request.on('end', function() {
         console.log('Body: ' + body)
