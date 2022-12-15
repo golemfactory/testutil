@@ -1,6 +1,7 @@
 import asyncio
 from pathlib import Path
 from typing import Optional
+import requests
 
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
@@ -25,7 +26,7 @@ def debug_middleware(make_request, w3):  # noqa
 class Scanner:
     address: Optional[str] = None
 
-    def __init__(self, config: dict, address: Optional[str], verbose: bool=False, debug: bool=False):
+    def __init__(self, config: dict, address: Optional[str], url: Optional[str], verbose: bool=False, debug: bool=False, ):
         self.config = config
         if address:
             self.address = address.lower()
@@ -38,10 +39,13 @@ class Scanner:
             self.config["glm_contract_address"],
             abi=open(ERC20_ABI_FILE, "r").read()
         )
+        self.url = url
 
     async def scan_blocks(self, from_block: int, to_block: int):
+        print("scanning block now")
         if self.verbose:
             print("blocks: ", list(range(from_block, to_block+1)))
+            print("url: ", self.url)
         for e in self.contract.events.Transfer.getLogs(fromBlock=from_block, toBlock=to_block):
             tx_hash = e["transactionHash"].hex()
             args = e["args"]
@@ -50,12 +54,26 @@ class Scanner:
                 or self.address == args["to"].lower()
                 or self.address == args["from"].lower()
             ):
-                print("transaction: \n", {
+                output_data = {
                           "from": args["from"],
                           "to": args["to"],
                           "amount": f"{wei_to_ether(args['value']):.16}",
                           "hash": tx_hash,
-                })
+                          "block": e["blockNumber"],
+                }
+                url_output_data = {
+                          "requesterAddress": args["from"],
+                          "providerAddress": args["to"],
+                          "glmAmount": f"{wei_to_ether(args['value']):.16}",
+                          "transactionId": tx_hash,
+                          "blockNumber": e["blockNumber"],
+                }
+
+                print("transactions : \n", output_data)
+                url = self.url        
+                requests.post(url, json = url_output_data)
+
+
 
     async def run(self, offset: int):
         previous_block_number = self.w3.eth.get_block_number() - offset
@@ -69,6 +87,6 @@ class Scanner:
             await asyncio.sleep(BLOCK_QUERY_INTERVAL)
 
 
-async def run_scanner(config, address: Optional[str], offset: int, verbose: bool, debug: bool):
-    scanner = Scanner(config, address, verbose=verbose, debug=debug)
+async def run_scanner(config, address: Optional[str], url: Optional[str], offset: int, verbose: bool, debug: bool):
+    scanner = Scanner(config, address, url, verbose=verbose, debug=debug)
     await scanner.run(offset)
