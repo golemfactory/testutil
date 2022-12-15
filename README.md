@@ -1,6 +1,13 @@
 
 ## Installation
 
+### Clone the repo
+
+```bash
+git clone https://github.com/golemfactory/testutil.git
+cd testutil
+```
+
 ### Initialize the environment
 
 ```bash
@@ -9,11 +16,14 @@ source ~/.envs/testutil/bin/activate
 pip install -U pip poetry
 ```
 
-### Clone the repo
+On windows:
+set variables HOMEDRIVE and HOMEPATH
+run cmd as administrator
 
 ```bash
-git clone https://github.com/golemfactory/testutil.git
-cd testutil
+python -m venv --clear %HOMEDRIVE%%HOMEPATH%\.envs\testutil
+%HOMEDRIVE%%HOMEPATH%.envs\testutil\Scripts\activate
+pip install -U pip poetry
 ```
 
 ### Install
