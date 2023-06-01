@@ -1,25 +1,13 @@
 
 ## Installation
 
-### Initialize the environment
-
-```bash
-python3 -m venv ~/.envs/testutil
-source ~/.envs/testutil/bin/activate
-pip install -U pip poetry
 ```
+$ pipx install git+https://github.com/golemfactory/testutil.git
+ installed package testutil 0.1.0, installed using Python 3.10.6
+  These apps are now globally available
+    - testutil
+done! ✨ 🌟 ✨
 
-### Clone the repo
-
-```bash
-git clone https://github.com/golemfactory/testutil.git
-cd testutil
-```
-
-### Install
-
-```bash
-poetry install
 ```
 
 ## Usage
